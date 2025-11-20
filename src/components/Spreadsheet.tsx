@@ -25,12 +25,22 @@ export function Spreadsheet() {
 
   // Initialize with some example data
   useEffect(() => {
-    if (localStorage.getItem("spreadsheet")) {
-      const savedCells = JSON.parse(
-        localStorage.getItem("spreadsheet") || "{}",
-      );
-      setCells(savedCells);
-      setFormulaBarValue(savedCells["A1"].formula || "");
+    const savedCellsSerialized = localStorage.getItem("spreadsheet");
+    if (savedCellsSerialized) {
+      try {
+        const savedCells = JSON.parse(savedCellsSerialized);
+        console.log({ savedCells, savedCellsSerialized });
+        if (!savedCells) {
+          console.error("Invalid saved spreadsheet data");
+          localStorage.setItem("spreadsheetBackup", savedCellsSerialized);
+          localStorage.removeItem("spreadsheet");
+          return;
+        }
+        setCells(savedCells);
+        setFormulaBarValue(savedCells["A1"].formula || "");
+      } catch (error) {
+        console.error("Error parsing saved spreadsheet data:", error);
+      }
     } else {
       const examples: Record<string, string> = {
         A1: "=!5",
@@ -40,7 +50,7 @@ export function Spreadsheet() {
 
       const initialCells: Record<string, CellData> = {};
       Object.entries(examples).forEach(([cellId, formula]) => {
-        const result = evaluateFormula(formula, initialCells);
+        const result = evaluateFormula(formula, initialCells, cellId);
         initialCells[cellId] = {
           formula,
           value: result.value,
@@ -66,7 +76,7 @@ export function Spreadsheet() {
 
       Object.keys(newCells).forEach((cellId) => {
         const cell = newCells[cellId];
-        const result = evaluateFormula(cell.formula, newCells);
+        const result = evaluateFormula(cell.formula, newCells, cellId);
 
         if (result.value !== cell.value || result.error !== cell.error) {
           newCells[cellId] = {

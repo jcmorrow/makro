@@ -39,6 +39,7 @@ export function parseCellReference(
 export function evaluateFormula(
   formula: string,
   cells: Record<string, CellData>,
+  cellId: string,
 ): { value: any; error?: string } {
   // If it doesn't start with =, treat as literal
   if (!formula.startsWith("=")) {
@@ -49,6 +50,12 @@ export function evaluateFormula(
   let expression = formula.slice(1);
 
   try {
+    console.log("expression:", expression);
+    expression = expression.replace(/\bUP\b/g, (match) => {
+      const cellAddress = parseCellReference(cellId);
+      return getCellLabel(cellAddress!.col, cellAddress!.row - 1);
+    });
+    console.log("expression2:", expression);
     // Replace cell references with their values
     expression = expression.replace(/[A-Z]+\d+/g, (match) => {
       const cell = cells[match];
@@ -61,6 +68,7 @@ export function evaluateFormula(
       // Convert value to JS literal
       return cell.value;
     });
+    console.log("expression3:", expression);
 
     const result = format(run(parse(expression)));
 
