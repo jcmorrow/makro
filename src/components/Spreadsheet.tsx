@@ -333,7 +333,16 @@ export function Spreadsheet() {
             setFormulaBarValue("");
             return;
           }
-          // Yank (copy): y
+          // Yank value: Y
+          else if (e.key === "Y") {
+            e.preventDefault();
+            const cell = cells[selectedCell];
+            if (cell) {
+              navigator.clipboard.writeText(cell.value);
+            }
+            return;
+          }
+          // Yank formula: y
           else if (e.key === "y") {
             e.preventDefault();
             const cell = cells[selectedCell];
@@ -421,6 +430,38 @@ export function Spreadsheet() {
             setSelectionStart(null);
             setSelectionEnd(null);
             setFormulaBarValue("");
+            return;
+          }
+          // Yank values: Y
+          else if (e.key === "Y") {
+            e.preventDefault();
+            // Copy all cells in selection
+            if (selectionStart && selectionEnd) {
+              const startCol = selectionStart.charCodeAt(0) - 65;
+              const startRow = parseInt(selectionStart.slice(1)) - 1;
+              const endCol = selectionEnd.charCodeAt(0) - 65;
+              const endRow = parseInt(selectionEnd.slice(1)) - 1;
+
+              const minCol = Math.min(startCol, endCol);
+              const maxCol = Math.max(startCol, endCol);
+              const minRow = Math.min(startRow, endRow);
+              const maxRow = Math.max(startRow, endRow);
+
+              let copyText = "";
+              for (let r = minRow; r <= maxRow; r++) {
+                for (let c = minCol; c <= maxCol; c++) {
+                  const cellId = String.fromCharCode(65 + c) + (r + 1);
+                  const cell = cells[cellId];
+                  console.log({ cell });
+                  copyText += (cell?.value || "") + "\t";
+                }
+                copyText += "\n";
+              }
+              navigator.clipboard.writeText(copyText);
+            }
+            setMode("normal");
+            setSelectionStart(null);
+            setSelectionEnd(null);
             return;
           }
           // Yank selection: y
@@ -729,9 +770,10 @@ function Cell({
       onMouseEnter={onMouseEnter}
       className={`
         border border-slate-700 min-w-[120px] h-8 px-2 text-sm font-mono
+        ${isSelected ? "max-w-96 text-wrap" : " max-w-64"}
         ${isSelected ? "ring-2 ring-emerald-500 ring-inset bg-slate-800" : isInSelection ? "bg-purple-900/40" : "bg-slate-900"}
         ${cell?.error ? "text-red-400" : "text-slate-200"}
-        cursor-cell hover:bg-slate-800 transition-colors max-w-64
+        cursor-cell hover:bg-slate-800 transition-colors
       `}
     >
       {isEditing ? (
@@ -749,7 +791,7 @@ function Cell({
           onClick={(e) => e.stopPropagation()}
         />
       ) : (
-        <div className="truncate">{displayValue}</div>
+        <div className={isSelected ? "" : "truncate"}>{displayValue}</div>
       )}
     </td>
   );

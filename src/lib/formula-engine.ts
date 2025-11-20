@@ -42,12 +42,6 @@ export function evaluateFormula(
 ): { value: any; error?: string } {
   // If it doesn't start with =, treat as literal
   if (!formula.startsWith("=")) {
-    // Try to parse as number
-    const num = parseFloat(formula);
-    if (!isNaN(num) && formula.trim() !== "") {
-      return { value: num };
-    }
-    // Otherwise return as string
     return { value: formula };
   }
 
