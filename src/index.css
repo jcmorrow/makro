@@ -5,6 +5,7 @@
 
 :root {
     --font-size: 16px;
+    --font-mono: "IBM Plex Mono", monospace;
     --background: #ffffff;
     --foreground: oklch(0.145 0 0);
     --card: #ffffff;
