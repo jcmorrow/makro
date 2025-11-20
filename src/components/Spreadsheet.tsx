@@ -602,6 +602,24 @@ export function Spreadsheet() {
               A spreadsheet with vim-keybindings and formulas written in K
             </span>
           </div>
+          <span className="text-slate-500 text-sm font-serif">
+            Made by{" "}
+            <a
+              target="_blank"
+              href="https://jcmorrow.com"
+              className="text-emerald-400 hover:underline"
+            >
+              @jcmorrow
+            </a>{" "}
+            with support from{" "}
+            <a
+              target="_blank"
+              href="https://github.com/JohnEarnest/ok"
+              className="text-emerald-400 hover:underline"
+            >
+              the oK interpreter
+            </a>
+          </span>
         </div>
 
         {/* Formula Bar */}
