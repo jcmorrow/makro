@@ -1,7 +1,5 @@
 
-  # Code Sheet
-
-  This is a code bundle for Code Sheet.
+  # Makro
 
   ## Running the code
 

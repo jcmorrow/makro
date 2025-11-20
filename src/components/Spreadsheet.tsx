@@ -27,20 +27,7 @@ export function Spreadsheet() {
   // Initialize with some example data
   useEffect(() => {
     const examples: Record<string, string> = {
-      A1: "1",
-      A2: "2",
-      A3: "3",
-      A4: "4",
-      A5: "5",
-      B1: "=[1,2,3,4,5]",
-      B2: "=B1.map(x => x * 2)",
-      B3: "=B1.filter(x => x > 2)",
-      B4: "=B1.reduce((a,b) => a + b, 0)",
-      C1: '="Hello"',
-      C2: '="World"',
-      C3: '=C1 + " " + C2',
-      D1: "=Array.from({length: 5}, (_, i) => i + 1)",
-      D2: "=D1.map(x => x ** 2)",
+      A1: "=!5",
     };
 
     const initialCells: Record<string, CellData> = {};
@@ -378,7 +365,7 @@ export function Spreadsheet() {
             return;
           }
           // Go to last row: G
-          else if (e.key === "G" && !isShiftPressed) {
+          else if (e.key === "G") {
             e.preventDefault();
             const newCell = String.fromCharCode(65 + col) + ROWS;
             setSelectedCell(newCell);
@@ -473,10 +460,7 @@ export function Spreadsheet() {
       if (e.key === "Enter" && !isShiftPressed) {
         e.preventDefault();
         if (editingCell) {
-          setEditingCell(null);
           setMode("normal");
-        } else {
-          handleFormulaBarSubmit();
         }
         // Move down
         const newRow = Math.min(row + 1, ROWS - 1);

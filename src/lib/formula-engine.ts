@@ -1,3 +1,5 @@
+import { run, parse, format } from "./ok";
+
 interface CellData {
   formula: string;
   value: any;
@@ -63,40 +65,10 @@ export function evaluateFormula(
         throw new Error(`Cell ${match} has error: ${cell.error}`);
       }
       // Convert value to JS literal
-      return JSON.stringify(cell.value);
+      return cell.value;
     });
 
-    // Add some useful functions
-    const context = {
-      r: (n: number) => Array.from({ length: n }, (_, i) => i),
-      sum: (arr: number[]) => arr.reduce((a, b) => a + b, 0),
-      avg: (arr: number[]) => arr.reduce((a, b) => a + b, 0) / arr.length,
-      max: (arr: number[]) => Math.max(...arr),
-      min: (arr: number[]) => Math.min(...arr),
-      len: (arr: any[]) => arr.length,
-      first: (arr: any[], n: number = 1) => arr.slice(0, n),
-      skip: (arr: any[], n: number = 0) => arr.slice(n),
-      Array,
-      Math,
-      String,
-      Number,
-      Boolean,
-      JSON,
-      Date,
-      Object,
-      parseInt,
-      parseFloat,
-      isNaN,
-      isFinite,
-    };
-
-    // Create function with context
-    const func = new Function(
-      ...Object.keys(context),
-      `"use strict"; return (${expression});`,
-    );
-
-    const result = func(...Object.values(context));
+    const result = format(run(parse(expression)));
 
     return { value: result };
   } catch (error) {

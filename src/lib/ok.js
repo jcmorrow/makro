@@ -2,6 +2,11 @@
 // Copyright (c) 2015, John Earnest
 // License: MIT (see LICENSE.oK in root)
 
+export const version = "0.1";
+window.run = run;
+window.parse = parse;
+export { parse, format, run, Environment, baseEnv, setIO };
+
 ////////////////////////////////////
 //
 //   A small(ish) implementation
@@ -11,7 +16,7 @@
 //
 ////////////////////////////////////
 
-"use strict";
+// "use strict";
 
 var TN = [
   "number", //  0 : value
@@ -2057,11 +2062,3 @@ function setIO(symbol, slot, func) {
   }
   verbs[symbol][slot] = func;
 }
-
-this.version = "0.1";
-this.parse = parse;
-this.format = format;
-this.run = run;
-this.Environment = Environment;
-this.baseEnv = baseEnv;
-this.setIO = setIO;
