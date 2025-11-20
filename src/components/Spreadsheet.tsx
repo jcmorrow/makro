@@ -1,6 +1,5 @@
 import React, { useState, useCallback, useEffect, useRef } from "react";
-import { Code2, Play } from "lucide-react";
-import { Button } from "./ui/button";
+import { Code2 } from "lucide-react";
 import { evaluateFormula } from "../lib/formula-engine";
 
 const ROWS = 30;
@@ -591,13 +590,6 @@ export function Spreadsheet() {
               placeholder="Enter formula (e.g., =!5 or =(</){(x*x;y*2)}/\(2;100)"
               className="flex-1 bg-slate-800 text-slate-100 px-3 py-2 rounded border border-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono text-sm"
             />
-            <Button
-              size="sm"
-              onClick={handleFormulaBarSubmit}
-              className="bg-emerald-600 hover:bg-emerald-700"
-            >
-              <Play className="size-4" />
-            </Button>
           </div>
         </div>
       </div>
