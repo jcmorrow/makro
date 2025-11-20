@@ -624,7 +624,7 @@ export function Spreadsheet() {
                 {columns.map((col) => (
                   <th
                     key={col}
-                    className="sticky top-0 z-10 bg-slate-800 border border-slate-700 min-w-[120px] h-8 text-slate-400 text-xs"
+                    className="sticky top-0 z-10 bg-slate-800 border border-slate-700 min-w-[120px] h-8 text-slate-400 text-xs font-mono font-normal"
                   >
                     {col}
                   </th>
@@ -634,7 +634,7 @@ export function Spreadsheet() {
             <tbody>
               {Array.from({ length: ROWS }, (_, rowIndex) => (
                 <tr key={rowIndex}>
-                  <td className="sticky left-0 z-10 bg-slate-800 border border-slate-700 w-12 h-8 text-center text-slate-400 text-xs">
+                  <td className="sticky left-0 z-10 bg-slate-800 border border-slate-700 w-12 h-8 text-center text-slate-400 text-xs font-mono px-2">
                     {rowIndex + 1}
                   </td>
                   {columns.map((col) => {
