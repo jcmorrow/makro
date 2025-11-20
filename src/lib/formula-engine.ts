@@ -5,7 +5,7 @@ interface CellData {
 }
 
 export function getCellLabel(col: number, row: number): string {
-  let label = '';
+  let label = "";
   let c = col;
   while (c >= 0) {
     label = String.fromCharCode(65 + (c % 26)) + label;
@@ -14,7 +14,9 @@ export function getCellLabel(col: number, row: number): string {
   return label + (row + 1);
 }
 
-export function parseCellReference(ref: string): { col: number; row: number } | null {
+export function parseCellReference(
+  ref: string,
+): { col: number; row: number } | null {
   const match = ref.match(/^([A-Z]+)(\d+)$/);
   if (!match) return null;
 
@@ -34,13 +36,13 @@ export function parseCellReference(ref: string): { col: number; row: number } | 
 
 export function evaluateFormula(
   formula: string,
-  cells: Record<string, CellData>
+  cells: Record<string, CellData>,
 ): { value: any; error?: string } {
   // If it doesn't start with =, treat as literal
-  if (!formula.startsWith('=')) {
+  if (!formula.startsWith("=")) {
     // Try to parse as number
     const num = parseFloat(formula);
-    if (!isNaN(num) && formula.trim() !== '') {
+    if (!isNaN(num) && formula.trim() !== "") {
       return { value: num };
     }
     // Otherwise return as string
@@ -55,7 +57,7 @@ export function evaluateFormula(
     expression = expression.replace(/\b([A-Z]+\d+)\b/g, (match) => {
       const cell = cells[match];
       if (!cell) {
-        return 'undefined';
+        return "undefined";
       }
       if (cell.error) {
         throw new Error(`Cell ${match} has error: ${cell.error}`);
@@ -66,11 +68,13 @@ export function evaluateFormula(
 
     // Add some useful functions
     const context = {
+      r: (n: number) => Array.from({ length: n }, (_, i) => i),
       sum: (arr: number[]) => arr.reduce((a, b) => a + b, 0),
       avg: (arr: number[]) => arr.reduce((a, b) => a + b, 0) / arr.length,
       max: (arr: number[]) => Math.max(...arr),
       min: (arr: number[]) => Math.min(...arr),
-      range: (start: number, end: number) => Array.from({ length: end - start + 1 }, (_, i) => start + i),
+      range: (start: number, end: number) =>
+        Array.from({ length: end - start + 1 }, (_, i) => start + i),
       len: (arr: any[]) => arr.length,
       Array,
       Math,
@@ -89,7 +93,7 @@ export function evaluateFormula(
     // Create function with context
     const func = new Function(
       ...Object.keys(context),
-      `"use strict"; return (${expression});`
+      `"use strict"; return (${expression});`,
     );
 
     const result = func(...Object.values(context));
@@ -98,7 +102,7 @@ export function evaluateFormula(
   } catch (error) {
     return {
       value: null,
-      error: error instanceof Error ? error.message : 'Invalid formula',
+      error: error instanceof Error ? error.message : "Invalid formula",
     };
   }
 }
