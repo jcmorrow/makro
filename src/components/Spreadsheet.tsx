@@ -25,24 +25,32 @@ export function Spreadsheet() {
 
   // Initialize with some example data
   useEffect(() => {
-    const examples: Record<string, string> = {
-      A1: "=!5",
-      A2: "=+/A1",
-      A3: "=!A2",
-    };
-
-    const initialCells: Record<string, CellData> = {};
-    Object.entries(examples).forEach(([cellId, formula]) => {
-      const result = evaluateFormula(formula, initialCells);
-      initialCells[cellId] = {
-        formula,
-        value: result.value,
-        error: result.error,
+    if (localStorage.getItem("spreadsheet")) {
+      const savedCells = JSON.parse(
+        localStorage.getItem("spreadsheet") || "{}",
+      );
+      setCells(savedCells);
+      setFormulaBarValue(savedCells["A1"].formula || "");
+    } else {
+      const examples: Record<string, string> = {
+        A1: "=!5",
+        A2: "=+/A1",
+        A3: "=!A2",
       };
-    });
 
-    setCells(initialCells);
-    setFormulaBarValue(examples["A1"] || "");
+      const initialCells: Record<string, CellData> = {};
+      Object.entries(examples).forEach(([cellId, formula]) => {
+        const result = evaluateFormula(formula, initialCells);
+        initialCells[cellId] = {
+          formula,
+          value: result.value,
+          error: result.error,
+        };
+      });
+      setCells(initialCells);
+      setFormulaBarValue(examples["A1"] || "");
+    }
+
     // Focus container on mount
     setTimeout(() => containerRef.current?.focus(), 100);
   }, []);
@@ -89,7 +97,9 @@ export function Spreadsheet() {
           };
         }
 
-        return recalculateAll(newCells);
+        const cells = recalculateAll(newCells);
+        localStorage.setItem("spreadsheet", JSON.stringify(cells));
+        return cells;
       });
     },
     [recalculateAll],
