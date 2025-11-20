@@ -73,9 +73,9 @@ export function evaluateFormula(
       avg: (arr: number[]) => arr.reduce((a, b) => a + b, 0) / arr.length,
       max: (arr: number[]) => Math.max(...arr),
       min: (arr: number[]) => Math.min(...arr),
-      range: (start: number, end: number) =>
-        Array.from({ length: end - start + 1 }, (_, i) => start + i),
       len: (arr: any[]) => arr.length,
+      first: (arr: any[], n: number = 1) => arr.slice(0, n),
+      skip: (arr: any[], n: number = 0) => arr.slice(n),
       Array,
       Math,
       String,

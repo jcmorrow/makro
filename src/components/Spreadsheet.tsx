@@ -307,6 +307,14 @@ export function Spreadsheet() {
         // Only in normal mode (not visual)
         if (mode === "normal") {
           // Enter insert mode: i
+          if (e.key === "=") {
+            e.preventDefault();
+            updateCell(selectedCell, "=");
+            setFormulaBarValue("=");
+            setEditingCell(selectedCell);
+            setMode("insert");
+            return;
+          }
           if (e.key === "i") {
             e.preventDefault();
             setEditingCell(selectedCell);
