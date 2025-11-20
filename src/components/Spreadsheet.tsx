@@ -549,9 +549,9 @@ export function Spreadsheet() {
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <Code2 className="size-6 text-emerald-400" />
-            <h1 className="text-slate-100">CodeSheet</h1>
+            <h1 className="text-slate-100">Makro</h1>
             <span className="text-slate-500 text-sm">
-              Array-Programming Spreadsheet
+              A spreadsheet with vim-keybindings and formulas written in K
             </span>
           </div>
           <Button
@@ -597,7 +597,7 @@ export function Spreadsheet() {
                 // Return focus to container
                 setTimeout(() => containerRef.current?.focus(), 0);
               }}
-              placeholder="Enter formula (e.g., =A1 * 2 or =[1,2,3].map(x => x * 2))"
+              placeholder="Enter formula (e.g., =!5 or =(</){(x*x;y*2)}/\(2;100)"
               className="flex-1 bg-slate-800 text-slate-100 px-3 py-2 rounded border border-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono text-sm"
             />
             <Button
