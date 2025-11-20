@@ -488,7 +488,8 @@ export function Spreadsheet() {
         setFormulaBarValue(cells[selectedCell]?.formula || "");
       } else if (
         (e.key === "Delete" || e.key === "Backspace") &&
-        !editingCell
+        !editingCell &&
+        mode !== "insert"
       ) {
         e.preventDefault();
         if (mode === "visual" && selectionStart && selectionEnd) {
@@ -550,7 +551,7 @@ export function Spreadsheet() {
           <div className="flex items-center gap-2">
             <Code2 className="size-6 text-emerald-400" />
             <h1 className="text-slate-100">Makro</h1>
-            <span className="text-slate-500 text-sm">
+            <span className="text-slate-500 text-sm font-serif">
               A spreadsheet with vim-keybindings and formulas written in K
             </span>
           </div>
@@ -588,10 +589,12 @@ export function Spreadsheet() {
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
                   handleFormulaBarSubmit();
+                  setEditingCell(null);
                 }
               }}
               onFocus={() => {
                 // When formula bar is focused, don't use vim mode
+                setMode("insert");
               }}
               onBlur={() => {
                 // Return focus to container
@@ -654,6 +657,7 @@ export function Spreadsheet() {
                         onEdit={(value) => handleCellEdit(cellId, value)}
                         onMouseDown={() => handleCellMouseDown(cellId)}
                         onMouseEnter={() => handleCellMouseEnter(cellId)}
+                        setFormulaBarValue={setFormulaBarValue}
                       />
                     );
                   })}
@@ -685,6 +689,7 @@ interface CellProps {
   onEdit: (value: string) => void;
   onMouseDown: () => void;
   onMouseEnter: () => void;
+  setFormulaBarValue: (value: string) => void;
 }
 
 function Cell({
@@ -697,6 +702,7 @@ function Cell({
   onEdit,
   onMouseDown,
   onMouseEnter,
+  setFormulaBarValue,
 }: CellProps) {
   const [editValue, setEditValue] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
@@ -744,7 +750,10 @@ function Cell({
           ref={inputRef}
           type="text"
           value={editValue}
-          onChange={(e) => setEditValue(e.target.value)}
+          onChange={(e) => {
+            setEditValue(e.target.value);
+            setFormulaBarValue(e.target.value);
+          }}
           onKeyDown={handleKeyDown}
           onBlur={() => onEdit(editValue)}
           className="w-full h-full bg-transparent outline-none text-slate-100"

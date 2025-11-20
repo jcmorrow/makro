@@ -1,9 +1,9 @@
-import React from 'react';
-import { Spreadsheet } from './components/Spreadsheet';
+import React from "react";
+import { Spreadsheet } from "./components/Spreadsheet";
 
 export default function App() {
   return (
-    <div className="min-h-screen bg-slate-950">
+    <div className="min-h-screen bg-slate-950 font-serif">
       <Spreadsheet />
     </div>
   );
