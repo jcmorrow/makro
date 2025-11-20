@@ -50,7 +50,7 @@ export function evaluateFormula(
 
   try {
     // Replace cell references with their values
-    expression = expression.replace(/\b([A-Z]+\d+)\b/g, (match) => {
+    expression = expression.replace(/[A-Z]+\d+/g, (match) => {
       const cell = cells[match];
       if (!cell) {
         return "undefined";
@@ -66,6 +66,8 @@ export function evaluateFormula(
 
     return { value: result };
   } catch (error) {
+    console.log(error);
+    console.error(error);
     return {
       value: null,
       error: error instanceof Error ? error.message : "Invalid formula",
