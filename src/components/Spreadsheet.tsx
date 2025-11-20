@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect, useRef } from "react";
-import { Code2, Play, Trash2 } from "lucide-react";
+import { Code2, Play } from "lucide-react";
 import { Button } from "./ui/button";
 import { evaluateFormula } from "../lib/formula-engine";
 
@@ -28,6 +28,8 @@ export function Spreadsheet() {
   useEffect(() => {
     const examples: Record<string, string> = {
       A1: "=!5",
+      A2: "=+/A1",
+      A3: "=!A2",
     };
 
     const initialCells: Record<string, CellData> = {};
@@ -528,11 +530,6 @@ export function Spreadsheet() {
     ],
   );
 
-  const handleClearAll = useCallback(() => {
-    setCells({});
-    setFormulaBarValue("");
-  }, []);
-
   const columns = Array.from({ length: COLS }, (_, i) =>
     String.fromCharCode(65 + i),
   );
@@ -555,15 +552,6 @@ export function Spreadsheet() {
               A spreadsheet with vim-keybindings and formulas written in K
             </span>
           </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleClearAll}
-            className="text-slate-400 hover:text-slate-100"
-          >
-            <Trash2 className="size-4 mr-2" />
-            Clear All
-          </Button>
         </div>
 
         {/* Formula Bar */}
@@ -647,7 +635,6 @@ export function Spreadsheet() {
                     return (
                       <Cell
                         key={cellId}
-                        cellId={cellId}
                         cell={cell}
                         isSelected={isSelected}
                         isEditing={isEditing}
