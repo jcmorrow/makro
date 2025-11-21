@@ -1,5 +1,5 @@
 import { run, parse, format } from "./ok";
-import { getCellLabel, parseCellReference } from "./util";
+import { getCellLabel, iterateCellRange, parseCellReference } from "./util";
 
 interface CellData {
   formula: string;
@@ -21,6 +21,17 @@ export function evaluateFormula(
   let expression = formula.slice(1);
 
   try {
+    // I think ideally this would actually also respect *shape*. Right now a 2x5
+    // range becomes a 1x10 range.
+    expression = expression.replace(
+      /@\[([A-Z]+\d+):([A-Z]+\d+)]/g,
+      (match, start, end) => {
+        return [...iterateCellRange(start, end)]
+          .map((cell) => cells[cell].value)
+          .join(" ");
+      },
+    );
+    // TODO: Implement LEFT, RIGHT, DOWN
     expression = expression.replace(/\bUP\b/g, (match) => {
       const cellAddress = parseCellReference(cellId);
       return getCellLabel(cellAddress!.col, cellAddress!.row - 1);
@@ -42,7 +53,7 @@ export function evaluateFormula(
 
     return { value: result };
   } catch (error) {
-    console.log(error);
+    console.log("Error running expression: ", expression);
     console.error(error);
     return {
       value: null,
