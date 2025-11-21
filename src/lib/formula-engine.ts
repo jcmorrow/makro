@@ -1,39 +1,10 @@
 import { run, parse, format } from "./ok";
+import { getCellLabel, parseCellReference } from "./util";
 
 interface CellData {
   formula: string;
   value: any;
   error?: string;
-}
-
-export function getCellLabel(col: number, row: number): string {
-  let label = "";
-  let c = col;
-  while (c >= 0) {
-    label = String.fromCharCode(65 + (c % 26)) + label;
-    c = Math.floor(c / 26) - 1;
-  }
-  return label + (row + 1);
-}
-
-export function parseCellReference(
-  ref: string,
-): { col: number; row: number } | null {
-  const match = ref.match(/^([A-Z]+)(\d+)$/);
-  if (!match) return null;
-
-  const colStr = match[1];
-  const rowStr = match[2];
-
-  let col = 0;
-  for (let i = 0; i < colStr.length; i++) {
-    col = col * 26 + (colStr.charCodeAt(i) - 65 + 1);
-  }
-  col -= 1;
-
-  const row = parseInt(rowStr) - 1;
-
-  return { col, row };
 }
 
 export function evaluateFormula(
@@ -50,12 +21,10 @@ export function evaluateFormula(
   let expression = formula.slice(1);
 
   try {
-    console.log("expression:", expression);
     expression = expression.replace(/\bUP\b/g, (match) => {
       const cellAddress = parseCellReference(cellId);
       return getCellLabel(cellAddress!.col, cellAddress!.row - 1);
     });
-    console.log("expression2:", expression);
     // Replace cell references with their values
     expression = expression.replace(/[A-Z]+\d+/g, (match) => {
       const cell = cells[match];
@@ -68,7 +37,6 @@ export function evaluateFormula(
       // Convert value to JS literal
       return cell.value;
     });
-    console.log("expression3:", expression);
 
     const result = format(run(parse(expression)));
 

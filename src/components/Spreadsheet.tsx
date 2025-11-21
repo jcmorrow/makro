@@ -1,6 +1,8 @@
 import React, { useState, useCallback, useEffect, useRef } from "react";
 import { Code2 } from "lucide-react";
 import { evaluateFormula } from "../lib/formula-engine";
+import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts";
+import { iterateCellRange, parseCellReference } from "../lib/util";
 
 const ROWS = 30;
 const COLS = 15;
@@ -9,6 +11,29 @@ interface CellData {
   formula: string;
   value: any;
   error?: string;
+}
+
+export default function IndexLineChart({ data }: { data: any[] }) {
+  return (
+    <div className="font-mono">
+      <LineChart
+        style={{
+          aspectRatio: 1.618,
+          maxWidth: 800,
+          margin: "auto",
+        }}
+        responsive
+        data={data}
+        width={400}
+        height={300}
+      >
+        <CartesianGrid stroke="#eee" strokeDasharray="5 5" />
+        <XAxis dataKey="name" />
+        <YAxis />
+        <Line type="monotone" dataKey="value" stroke="#8884d8" />
+      </LineChart>
+    </div>
+  );
 }
 
 export function Spreadsheet() {
@@ -29,7 +54,6 @@ export function Spreadsheet() {
     if (savedCellsSerialized) {
       try {
         const savedCells = JSON.parse(savedCellsSerialized);
-        console.log({ savedCells, savedCellsSerialized });
         if (!savedCells) {
           console.error("Invalid saved spreadsheet data");
           localStorage.setItem("spreadsheetBackup", savedCellsSerialized);
@@ -37,7 +61,7 @@ export function Spreadsheet() {
           return;
         }
         setCells(savedCells);
-        setFormulaBarValue(savedCells["A1"].formula || "");
+        setFormulaBarValue(savedCells["A1"]?.formula || "");
       } catch (error) {
         console.error("Error parsing saved spreadsheet data:", error);
       }
@@ -120,28 +144,31 @@ export function Spreadsheet() {
     (cellId: string) => {
       if (!selectionStart || !selectionEnd) return false;
 
-      const startCol = selectionStart.charCodeAt(0) - 65;
-      const startRow = parseInt(selectionStart.slice(1)) - 1;
-      const endCol = selectionEnd.charCodeAt(0) - 65;
-      const endRow = parseInt(selectionEnd.slice(1)) - 1;
+      const start = parseCellReference(selectionStart)!;
+      const end = parseCellReference(selectionEnd)!;
 
-      const cellCol = cellId.charCodeAt(0) - 65;
-      const cellRow = parseInt(cellId.slice(1)) - 1;
+      const cell = parseCellReference(cellId)!;
 
-      const minCol = Math.min(startCol, endCol);
-      const maxCol = Math.max(startCol, endCol);
-      const minRow = Math.min(startRow, endRow);
-      const maxRow = Math.max(startRow, endRow);
+      const minCol = Math.min(start?.col, end.col);
+      const maxCol = Math.max(start.col, end.col);
+      const minRow = Math.min(start.row, end.row);
+      const maxRow = Math.max(start.row, end.row);
 
       return (
-        cellCol >= minCol &&
-        cellCol <= maxCol &&
-        cellRow >= minRow &&
-        cellRow <= maxRow
+        cell.col >= minCol &&
+        cell.col <= maxCol &&
+        cell.row >= minRow &&
+        cell.row <= maxRow
       );
     },
     [selectionStart, selectionEnd],
   );
+
+  const selectedData = (
+    selectionStart && selectionEnd
+      ? [...iterateCellRange(selectionStart, selectionEnd)]
+      : []
+  ).map((cellId) => cells[cellId]);
 
   const handleCellClick = useCallback(
     (cellId: string, _e: React.MouseEvent) => {
@@ -419,21 +446,11 @@ export function Spreadsheet() {
             e.preventDefault();
             // Delete all cells in selection
             if (selectionStart && selectionEnd) {
-              const startCol = selectionStart.charCodeAt(0) - 65;
-              const startRow = parseInt(selectionStart.slice(1)) - 1;
-              const endCol = selectionEnd.charCodeAt(0) - 65;
-              const endRow = parseInt(selectionEnd.slice(1)) - 1;
-
-              const minCol = Math.min(startCol, endCol);
-              const maxCol = Math.max(startCol, endCol);
-              const minRow = Math.min(startRow, endRow);
-              const maxRow = Math.max(startRow, endRow);
-
-              for (let c = minCol; c <= maxCol; c++) {
-                for (let r = minRow; r <= maxRow; r++) {
-                  const cellId = String.fromCharCode(65 + c) + (r + 1);
-                  updateCell(cellId, "");
-                }
+              for (const cell of iterateCellRange(
+                selectionStart,
+                selectionEnd,
+              )) {
+                updateCell(cell, "");
               }
             }
             setMode("normal");
@@ -631,7 +648,6 @@ export function Spreadsheet() {
             </a>
           </span>
         </div>
-
         {/* Formula Bar */}
         <div className="flex items-center gap-2">
           <div className="text-slate-400 text-sm font-mono w-32 flex items-center gap-2">
@@ -674,8 +690,8 @@ export function Spreadsheet() {
       </div>
 
       {/* Spreadsheet Grid */}
-      <div className="flex-1 overflow-auto bg-slate-900">
-        <div className="inline-block min-w-full">
+      <div className="flex-1 flex overflow-auto bg-slate-900 flex-row">
+        <div className="inline-block">
           <table className="border-collapse">
             <thead>
               <tr>
@@ -724,6 +740,11 @@ export function Spreadsheet() {
             </tbody>
           </table>
         </div>
+        {selectedData.length && (
+          <div className="absolute top-8 right-8 bg-slate-900 rounded-2xl shadow-2xl z-10 p-4 border-slate-300 border">
+            <IndexLineChart data={selectedData} />
+          </div>
+        )}
       </div>
 
       {/* Help Text */}
