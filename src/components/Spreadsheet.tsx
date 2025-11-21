@@ -624,12 +624,12 @@ export function Spreadsheet() {
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <Code2 className="size-6 text-emerald-400" />
-            <h1 className="text-slate-100">Makro</h1>
-            <span className="text-slate-500 text-sm font-serif">
+            <h1 className="text-slate-100 font-display">Makro</h1>
+            <span className="text-slate-500 text-sm">
               A spreadsheet with vim-keybindings and formulas written in K
             </span>
           </div>
-          <span className="text-slate-500 text-sm font-serif">
+          <span className="text-slate-500 text-sm">
             Made by{" "}
             <a
               target="_blank"

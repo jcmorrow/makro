@@ -3,9 +3,13 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@theme {
+    --font-display: "Stack Sans Headline", "Inter", sans-serif;
+}
+
 :root {
     --font-size: 16px;
-    --font-serif: "Ovo", serif;
+    --font-sans: "Stack Sans Text", "Inter", sans-serif;
     --font-mono: "IBM Plex Mono", monospace;
     --background: #ffffff;
     --foreground: oklch(0.145 0 0);
