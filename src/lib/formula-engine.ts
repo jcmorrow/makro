@@ -31,10 +31,14 @@ export function evaluateFormula(
           .join(" ");
       },
     );
-    // TODO: Implement LEFT, RIGHT, DOWN
+    // TODO: Implement RIGHT, DOWN
     expression = expression.replace(/\bUP\b/g, (match) => {
       const cellAddress = parseCellReference(cellId);
-      return getCellLabel(cellAddress!.col, cellAddress!.row - 1);
+      return getCellLabel(cellAddress!.col, Math.max(0, cellAddress!.row - 1));
+    });
+    expression = expression.replace(/\bLEFT\b/g, (match) => {
+      const cellAddress = parseCellReference(cellId);
+      return getCellLabel(Math.max(0, cellAddress!.col - 1), cellAddress!.row);
     });
     // Replace cell references with their values
     expression = expression.replace(/[A-Z]+\d+/g, (match) => {
